@@ -45,9 +45,6 @@ def NN_method(dataframe):
 
 
 if __name__ == '__main__':
-    vis = [False] * 48
-    vis[5] = False
-
-    print(next_city(df.loc[0], vis))
+    print(1)
 
 
