@@ -157,7 +157,7 @@ for parametry in kombinacjeParametrow:
                     najlepszaTrasa['trasa'] = trasa.copy()
                 break
 
-    parametry['noImprovementIteration'] = przerwanieBezPoprawy
+    parametry['przerwanieBezPoprawy'] = przerwanieBezPoprawy
     wyniki.append({'parametry': parametry, 'najlepszaDlugoscTrasy': najlepszaTrasa['dlugosc'], 'trasa': najlepszaTrasa['trasa']})
 
 wyniki = sorted(wyniki, key=lambda d: d['najlepszaDlugoscTrasy'])
