@@ -168,14 +168,14 @@ arkuszRoboczy = xlsxwriter.Workbook(nazwaPliku)
 arkuszDanych = arkuszRoboczy.add_worksheet()
 arkuszDanych.set_column(6, 6, dlugosc_trasy)
 
-row = 1
-for res in wyniki:
-    arkuszDanych.write(row, 0, res['parametry']['iteracje'])
-    arkuszDanych.write(row, 1, res['parametry']['brakPoprawy'])
-    arkuszDanych.write(row, 2, res['parametry']['dlugoscTabu'])
-    arkuszDanych.write(row, 3, res['parametry']['sasiedztwo'])
-    arkuszDanych.write(row, 4, res['najlepszaDlugoscTrasy'])
-    arkuszDanych.write(row, 5, ','.join(str(point) for point in res['trasa']))
-    row += 1
+wiersz = 1
+for wynik in wyniki:
+    arkuszDanych.write(wiersz, 0, wynik['parametry']['iteracje'])
+    arkuszDanych.write(wiersz, 1, wynik['parametry']['brakPoprawy'])
+    arkuszDanych.write(wiersz, 2, wynik['parametry']['dlugoscTabu'])
+    arkuszDanych.write(wiersz, 3, wynik['parametry']['sasiedztwo'])
+    arkuszDanych.write(wiersz, 4, wynik['najlepszaDlugoscTrasy'])
+    arkuszDanych.write(wiersz, 5, ','.join(str(point) for point in wynik['trasa']))
+    wiersz += 1
 
 arkuszRoboczy.close()
