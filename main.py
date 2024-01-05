@@ -1,6 +1,4 @@
-import sys
 import pandas as pd
-import numpy as np
 import NN
 
 #Wczytanie danych
@@ -14,7 +12,5 @@ itinerary = {
 
 if __name__ == '__main__':
     NN.NN_method(df, itinerary)
-    print(NN.NN_method(df, itinerary))
-    print(itinerary)
 
 
