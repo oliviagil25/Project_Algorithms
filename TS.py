@@ -3,6 +3,19 @@ import random
 import xlsxwriter
 from itertools import product
 
+nazwaPliku = "/dane/Dane_TSP_127.xlsx"
+daneExcela = pd.read_excel(nazwaPliku)
+
+listaIteracji = [250,500,750,1000]
+listaBrakuPoprawy = [4,8,16,""]
+dlugoscListyTabu = [3,4,5]
+rodzajSasiedztwa = ["zamiana", "odwrocenie"]
+
+kombinacjeParametrow = [{'iteracje': iteracje, 'brakPoprawy': brakPoprawy, 'dlugoscTabu': dlugoscTabu, 'sasiedztwo': sasiedztwo}
+                        for iteracje, brakPoprawy, dlugoscTabu, sasiedztwo
+                        in product(listaIteracji, listaBrakuPoprawy, dlugoscListyTabu, rodzajSasiedztwa)]
+
+
 def dlugosc_trasy(trasa, odleglosc):
     dlugosc = sum([odleglosc[f"{punkt_startowy}:{punkt_docelowy}"]
                    for punkt_startowy, punkt_docelowy in zip(trasa[:-1], trasa[1:])])
@@ -86,17 +99,6 @@ def czy_ruch_tabu(listaTabu, mozliwyRuch):
             return True
     return False
 
-listaIteracji = [100,250,500,750]
-listaBrakuPoprawy = [4,8,16,""]
-dlugoscListyTabu = [3,4,5]
-rodzajSasiedztwa = ["zamiana", "odwrocenie"]
-
-kombinacjeParametrow = [{'iteracje': iteracje, 'brakPoprawy': brakPoprawy, 'dlugoscTabu': dlugoscTabu, 'sasiedztwo': sasiedztwo}
-                        for iteracje, brakPoprawy, dlugoscTabu, sasiedztwo
-                        in product(listaIteracji, listaBrakuPoprawy, dlugoscListyTabu, rodzajSasiedztwa)]
-
-nazwaPliku = "/dane/Dane_TSP_48.xlsx"
-daneExcela = pd.read_excel(nazwaPliku)
 wartosci = daneExcela.values
 odleglosc = {}
 odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
@@ -164,7 +166,7 @@ wyniki = sorted(wyniki, key=lambda d: d['najlepszaDlugoscTrasy'])
 
 dlugosc_trasy = len(','.join(str(point) for point in wyniki[0]['trasa']))
 dlugosc_trasy = int(0.85 * dlugosc_trasy)
-arkuszRoboczy = xlsxwriter.Workbook(nazwaPliku)
+arkuszRoboczy = xlsxwriter.Workbook(nazwaPliku.replace('.xlsx', '_wyniki.xlsx'))
 arkuszDanych = arkuszRoboczy.add_worksheet()
 arkuszDanych.set_column(6, 6, dlugosc_trasy)
 
