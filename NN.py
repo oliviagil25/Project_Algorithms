@@ -1,41 +1,44 @@
 import pandas as pd
 import sys
 
-#metoda pozwala określić, do którego miasta należy w następnej kolejności pojechać oraz odległośc od niego
-def next_city(row, unvisited):
-    dfr = pd.DataFrame({'Row': row, 'Unvisited': unvisited})
-    dfr = dfr.sort_values(by='Row', ascending=True)
-    for i in range(0,len(dfr)):
-        if ((dfr.iloc[i]['Row'] != 0) and (dfr.iloc[i]['Unvisited'] == True)):
-            break
-    value = dfr.iloc[i]['Row']
-    for i, v in enumerate(row):
-        if v == value:
-            column = i
-            break
-    return value, column
+def nearest_neighbor(graph, start):
+    num_vertices = len(graph)
+    visited = [False] * num_vertices
+    path = [start]
+    visited[start] = True
+    distance = 0
 
-#metoda najbliższego sąsiada: zwraca całkowitą długość trasy oraz uzupełnia plan podróży o kolejne miasta i odległości między nimi
-def NN_method(dataframe, itinerary):
-    #rozważamy możliwość rozpoczęcia trasy w każdym mieście
-    minimal_distance = sys.maxsize
-    for i in range(0, len(dataframe)):
-        unvisited = [True] * len(dataframe)
-        sum_of_distances = 0
-        cities = [0] * len(dataframe)
-        distances = [0] * len(dataframe)
-        a = i
-        #pętla pozwalająca "poruszać się" od miasta do miasta
-        for j in range(0, len(dataframe)):
-            distances[j] = next_city(dataframe.loc[a], unvisited)[0]
-            cities[j] = next_city(dataframe.loc[a], unvisited)[1]
-            sum_of_distances=sum_of_distances+distances[j]
-            unvisited[a] = False
-            a = cities[j]
-        sum_of_distances=sum_of_distances+dataframe.iloc[i,a] #odległość od ostatniego do pierwszego miasta
-        if sum_of_distances<minimal_distance:
-            minimal_distance = sum_of_distances
-            cities.insert(0,i)
-            itinerary["city"] = cities
-            itinerary["distance"] = distances
-    return sum_of_distances
+    for i in range(num_vertices - 1):
+        min_weight = sys.maxsize
+        next_vertex = -1
+        current_vertex = path[-1]
+        for neighbor in range(num_vertices):
+            if not visited[neighbor] and graph.iloc[current_vertex, neighbor] < min_weight:
+                min_weight = graph.iloc[current_vertex, neighbor]
+                next_vertex = neighbor
+
+        if next_vertex != -1:
+            path.append(next_vertex)
+            visited[next_vertex] = True
+            distance += min_weight
+
+    distance += graph.iloc[path[-1], start]
+
+    return path, distance
+
+def best_path(graph):
+    min_dist = sys.maxsize
+    best_start = 0
+    for i in range(len(graph) - 1):
+        dist = nearest_neighbor(graph, i)[1]
+        if dist < min_dist:
+            min_dist = dist
+            best_start = i
+    return nearest_neighbor(graph, best_start)
+
+df1 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_48.csv')
+df2 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_76.csv')
+df3 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_127.csv')
+
+print("Najlepsza kolejność miast:", best_path(df3)[0])
+print("Najlepsza odległość:", best_path(df3)[1])
