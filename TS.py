@@ -15,12 +15,13 @@ kombinacjeParametrow = [{'iteracje': iteracje, 'brakPoprawy': brakPoprawy, 'dlug
                         for iteracje, brakPoprawy, dlugoscTabu, sasiedztwo
                         in product(listaIteracji, listaBrakuPoprawy, dlugoscListyTabu, rodzajSasiedztwa)]
 
-
+#Oblicza długość trasy na podstawie macierzy odległości.
 def dlugosc_trasy(trasa, odleglosc):
     dlugosc = sum([odleglosc[f"{punkt_startowy}:{punkt_docelowy}"]
                    for punkt_startowy, punkt_docelowy in zip(trasa[:-1], trasa[1:])])
     return dlugosc
 
+#Wykonuje ruch na trasie, takie jak zamiana lub odwrócenie fragmentu trasy.
 def wykonaj_ruch(trasa, p1, p2, rodzaj_ruchu):
     i1 = trasa.index(p1)
     i2 = trasa.index(p2)
@@ -36,6 +37,7 @@ def wykonaj_ruch(trasa, p1, p2, rodzaj_ruchu):
             trasa[i1 + i], trasa[i2 - i] = trasa[i2 - i], trasa[i1 + i]
 
 
+#Oblicza długość trasy po wykonaniu ruchu
 def nowa_dlugosc_trasy(trasa, odleglosc, aktualnadlugosc, p1, p2):
     i1 = trasa.index(p1)
     i2 = trasa.index(p2)
@@ -74,6 +76,7 @@ def nowa_dlugosc_trasy(trasa, odleglosc, aktualnadlugosc, p1, p2):
     return {"p1": p1, "p2": p2, "dlugosc": aktualnadlugosc}
 
 
+#Oblicza długość trasy po odwróceniu fragmentu trasy
 def dlugosc_odwroceniu(trasa, odleglosc, aktualnadlugosc, p1, p2):
     i1 = trasa.index(p1)
     i2 = trasa.index(p2)
@@ -87,7 +90,7 @@ def dlugosc_odwroceniu(trasa, odleglosc, aktualnadlugosc, p1, p2):
 
     return {"p1": p1, "p2": p2, "dlugosc": aktualnadlugosc}
 
-
+#Sprawdza, czy dany ruch jest na liście tabu.
 def czy_ruch_tabu(listaTabu, mozliwyRuch):
     if not listaTabu:
         return False

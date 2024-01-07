@@ -16,15 +16,18 @@ liczbaIteracji = [500, 1000, 1500]
 rozmiarTurnieju = 5
 rozmiarElity = 2
 
+#oblicza odległość między dwoma miastami na podstawie wcześniej wczytanej macierzy odległości.
 def odleglosc(a, b):
     return odleglosci_miedzy_miastami.get(f'{a}:{b}', odleglosci_miedzy_miastami.get(f'{b}:{a}', 0))
 
+#ocenia trasę na podstawie sumy odległości między kolejnymi miastami.
 def ocena(trasa):
     suma = 0
     for i in range(len(trasa)):
         suma += odleglosc(trasa[i], trasa[(i + 1) % len(trasa)])
     return suma
 
+#generuje początkową populację, gdzie każdy osobnik to permutacja miast.
 def generuj_poczatkowa_populacje(rozmiarPopulacji):
     populacja = []
     for _ in range(rozmiarPopulacji):
@@ -33,11 +36,13 @@ def generuj_poczatkowa_populacje(rozmiarPopulacji):
         populacja.append(trasa)
     return populacja
 
+#przeprowadza turniej, z którego wyłaniany jest najlepszy osobnik.
 def turniej(populacja, rozmiar_turnieju):
     turniej = random.sample(populacja, min(rozmiar_turnieju, len(populacja)))
     zwyciezca = min(turniej, key=lambda trasa: ocena(trasa))
     return zwyciezca
 
+#krzyżuje dwóch rodziców i jest zwracany potomek
 def krzyzowanie(rodzic1, rodzic2):
     punkt1 = random.randint(0, len(rodzic1) - 1)
     punkt2 = random.randint(punkt1, len(rodzic1) - 1)
@@ -53,6 +58,7 @@ def krzyzowanie(rodzic1, rodzic2):
 
     return potomek
 
+#wykonuje mutacje z odpowiedmin prawdopodobienstwem
 def mutacja(trasa, prawdopodobienstwo_mutacji):
     if random.random() < prawdopodobienstwo_mutacji:
         punkt1 = random.randint(0, len(trasa) - 1)
