@@ -3,9 +3,15 @@ import random
 import xlsxwriter
 from itertools import product
 
+#wczytanie pliku excel
 nazwaPliku = "/dane/Dane_TSP_127.xlsx"
 daneExcela = pd.read_excel(nazwaPliku)
 
+wartosci = daneExcela.values
+odleglosc = {}
+odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
+
+#parametry i ich wartości
 listaIteracji = [250,500,750,1000]
 listaBrakuPoprawy = [4,8,16,""]
 dlugoscListyTabu = [3,4,5]
@@ -15,13 +21,13 @@ kombinacjeParametrow = [{'iteracje': iteracje, 'brakPoprawy': brakPoprawy, 'dlug
                         for iteracje, brakPoprawy, dlugoscTabu, sasiedztwo
                         in product(listaIteracji, listaBrakuPoprawy, dlugoscListyTabu, rodzajSasiedztwa)]
 
-#Oblicza długość trasy na podstawie macierzy odległości.
+#oblicza długość trasy
 def dlugosc_trasy(trasa, odleglosc):
     dlugosc = sum([odleglosc[f"{punkt_startowy}:{punkt_docelowy}"]
                    for punkt_startowy, punkt_docelowy in zip(trasa[:-1], trasa[1:])])
     return dlugosc
 
-#Wykonuje ruch na trasie, takie jak zamiana lub odwrócenie fragmentu trasy.
+#ta funkcja wykonuje ruch albo zamiane miejscami miast albo odwrocenie miast
 def wykonaj_ruch(trasa, p1, p2, rodzaj_ruchu):
     i1 = trasa.index(p1)
     i2 = trasa.index(p2)
@@ -37,7 +43,7 @@ def wykonaj_ruch(trasa, p1, p2, rodzaj_ruchu):
             trasa[i1 + i], trasa[i2 - i] = trasa[i2 - i], trasa[i1 + i]
 
 
-#Oblicza długość trasy po wykonaniu ruchu
+#Funkcja oblicza na nowo długość trasy po wykonaniu ruchu w funkcji wykonaj_ruch
 def nowa_dlugosc_trasy(trasa, odleglosc, aktualnadlugosc, p1, p2):
     i1 = trasa.index(p1)
     i2 = trasa.index(p2)
@@ -76,7 +82,7 @@ def nowa_dlugosc_trasy(trasa, odleglosc, aktualnadlugosc, p1, p2):
     return {"p1": p1, "p2": p2, "dlugosc": aktualnadlugosc}
 
 
-#Oblicza długość trasy po odwróceniu fragmentu trasy
+#ta funkcja oblicza dlugosc trasy po "odwróceniu"
 def dlugosc_odwroceniu(trasa, odleglosc, aktualnadlugosc, p1, p2):
     i1 = trasa.index(p1)
     i2 = trasa.index(p2)
@@ -90,7 +96,7 @@ def dlugosc_odwroceniu(trasa, odleglosc, aktualnadlugosc, p1, p2):
 
     return {"p1": p1, "p2": p2, "dlugosc": aktualnadlugosc}
 
-#Sprawdza, czy dany ruch jest na liście tabu.
+#sprawdza czy został wykonany ruch na liście tabu
 def czy_ruch_tabu(listaTabu, mozliwyRuch):
     if not listaTabu:
         return False
@@ -101,10 +107,6 @@ def czy_ruch_tabu(listaTabu, mozliwyRuch):
         if {p1, p2} == set(ruchTabu):
             return True
     return False
-
-wartosci = daneExcela.values
-odleglosc = {}
-odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
 
 wyniki = []
 przerwanieBezPoprawy = False
@@ -165,8 +167,10 @@ for parametry in kombinacjeParametrow:
     parametry['przerwanieBezPoprawy'] = przerwanieBezPoprawy
     wyniki.append({'parametry': parametry, 'najlepszaDlugoscTrasy': najlepszaTrasa['dlugosc'], 'trasa': najlepszaTrasa['trasa']})
 
+#wyniki posortowane od najmniejszego do najwiekszego
 wyniki = sorted(wyniki, key=lambda d: d['najlepszaDlugoscTrasy'])
 
+#zapis wynikow do nowo stworzonego pliku excel
 dlugosc_trasy = len(','.join(str(point) for point in wyniki[0]['trasa']))
 dlugosc_trasy = int(0.85 * dlugosc_trasy)
 arkuszRoboczy = xlsxwriter.Workbook(nazwaPliku.replace('.xlsx', '_wyniki.xlsx'))

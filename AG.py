@@ -2,7 +2,8 @@ import random
 import pandas as pd
 import xlsxwriter
 
-nazwaPliku = "/dane/Dane_TSP_127.xlsx"
+#wczytanie pliku excel
+nazwaPliku = "/dane/Dane29.xlsx"
 daneExcela = pd.read_excel(nazwaPliku)
 wartosci = daneExcela.values
 odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
@@ -10,24 +11,25 @@ odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1)
 odleglosci_miedzy_miastami = odleglosc
 miasta = list(range(1, len(wartosci) + 1))
 
+#parametry wraz z ich wartościami
 rozmiarPopulacji = [50, 150, 250]
 prawdopodobienstwoMutacji = [0.2, 0.3, 0.4]
 liczbaIteracji = [500, 1000, 1500]
 rozmiarTurnieju = 5
 rozmiarElity = 2
 
-#oblicza odległość między dwoma miastami na podstawie wcześniej wczytanej macierzy odległości.
+#oblicza odleglosc miedzy miastami
 def odleglosc(a, b):
     return odleglosci_miedzy_miastami.get(f'{a}:{b}', odleglosci_miedzy_miastami.get(f'{b}:{a}', 0))
 
-#ocenia trasę na podstawie sumy odległości między kolejnymi miastami.
+#ta funkcja ocenia trase poprzez sume odleglosci miedzy kolejnymi miastami
 def ocena(trasa):
     suma = 0
     for i in range(len(trasa)):
         suma += odleglosc(trasa[i], trasa[(i + 1) % len(trasa)])
     return suma
 
-#generuje początkową populację, gdzie każdy osobnik to permutacja miast.
+#funkcja ktora generuje poczatkowa populacje
 def generuj_poczatkowa_populacje(rozmiarPopulacji):
     populacja = []
     for _ in range(rozmiarPopulacji):
@@ -42,7 +44,7 @@ def turniej(populacja, rozmiar_turnieju):
     zwyciezca = min(turniej, key=lambda trasa: ocena(trasa))
     return zwyciezca
 
-#krzyżuje dwóch rodziców i jest zwracany potomek
+#funckja ktora pozwala wybrac najlepszego potomka
 def krzyzowanie(rodzic1, rodzic2):
     punkt1 = random.randint(0, len(rodzic1) - 1)
     punkt2 = random.randint(punkt1, len(rodzic1) - 1)
@@ -58,7 +60,7 @@ def krzyzowanie(rodzic1, rodzic2):
 
     return potomek
 
-#wykonuje mutacje z odpowiedmin prawdopodobienstwem
+#przeprowadzana mutacja z danym prawdopodobienstwem
 def mutacja(trasa, prawdopodobienstwo_mutacji):
     if random.random() < prawdopodobienstwo_mutacji:
         punkt1 = random.randint(0, len(trasa) - 1)
@@ -105,8 +107,10 @@ for pm in prawdopodobienstwoMutacji:
                 'ocenaTrasy': ocena_trasy
             })
 
+#wyniki posortowane od najmniejszej wartosci do najwiekszej
 wyniki_posortowane = sorted(wyniki, key=lambda x: x['ocenaTrasy'])
 
+#zapis wynikow do nowo stworzonego pliku excel
 arkuszRoboczy = xlsxwriter.Workbook(nazwaPliku.replace('.xlsx', '_wyniki.xlsx'))
 arkuszDanych = arkuszRoboczy.add_worksheet()
 arkuszDanych.set_column(6, 6)
