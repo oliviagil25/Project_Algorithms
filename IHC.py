@@ -9,7 +9,7 @@ def odleglosc_miasta(miasto_a, miasto_b, odleglosc):
 def oblicz_trase_odleglosc(trasa, odleglosc):
     return sum(odleglosc_miasta(trasa[i], trasa[i + 1], odleglosc) for i in range(len(trasa) - 1))
 
-def generuj_sasiedztwo(trasa, rodzaj_sasiedztwa):
+def jakie_sasiedztwo(trasa, rodzaj_sasiedztwa):
     sasiedztwo = []
 
     if rodzaj_sasiedztwa == "swap_cities":
@@ -23,7 +23,7 @@ def generuj_sasiedztwo(trasa, rodzaj_sasiedztwa):
 
     return sasiedztwo
 
-def iteracyjna_wspinaczka_ihc(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe_miasta):
+def algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe_miasta):
     wyniki = []
 
     for liczba_iter in liczby_iteracji:
@@ -32,7 +32,7 @@ def iteracyjna_wspinaczka_ihc(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, st
             odleglosc_aktualna = oblicz_trase_odleglosc(aktualne_miasta, odleglosc)
 
             for _ in range(liczba_iter):
-                sasiedztwo = generuj_sasiedztwo(aktualne_miasta, rodzaj_sas)
+                sasiedztwo = jakie_sasiedztwo(aktualne_miasta, rodzaj_sas)
                 random.shuffle(sasiedztwo)
 
                 for sasiad in sasiedztwo:
@@ -42,11 +42,11 @@ def iteracyjna_wspinaczka_ihc(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, st
                         aktualne_miasta = sasiad
                         odleglosc_aktualna = odleglosc_sasiada
 
-                        # Sprawdzenie, czy trasa jest już w wynikach
+                        # Sprawdzam czy trasa (miasto??) jest już w wynikach nie
                         if any(np.array_equal(wynik["Trasa"], sasiad) for wynik in wyniki):
                             continue
 
-                        # Zapisanie wyniku dla każdej pary wartości
+                        # Wyniki
                         wyniki.append({
                             "Parametry": {
                                 "liczba_iter": liczba_iter,
@@ -56,7 +56,7 @@ def iteracyjna_wspinaczka_ihc(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, st
                             "Odległość": odleglosc_sasiada
                         })
 
-    # Sortowanie wyników według odległości
+    # Ustawienie wyników w kolejności malejącej - widoczne najlepsze wyniki
     wyniki.sort(key=lambda x: x["Odległość"])
 
     return wyniki
@@ -71,9 +71,9 @@ if __name__ == "__main__":
     rodzaje_sasiedztwa = ["swap_cities", "insert_city", "reverse_order"]
     startowe_miasta = list(range(1, len(wartosci) + 1))
 
-    wyniki = iteracyjna_wspinaczka_ihc(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe_miasta)
+    wyniki = algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe_miasta)
 
-    # Zapis wyników do pliku Excel
+    # Zapisanie wyników do pliku Excel
     nazwaPlikuWyniki = nazwaPliku.replace('.xlsx', '_wyniki.xlsx')
     arkuszRoboczy = xlsxwriter.Workbook(nazwaPlikuWyniki)
     arkuszDanych = arkuszRoboczy.add_worksheet()
@@ -93,3 +93,4 @@ if __name__ == "__main__":
         wiersz += 1
 
     arkuszRoboczy.close()
+
