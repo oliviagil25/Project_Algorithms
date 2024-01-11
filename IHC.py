@@ -63,6 +63,7 @@ def algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe
     wyniki.sort(key=lambda x: x["Odległość"])
 
     return wyniki
+
 # wczytanie pliku excel
 if __name__ == "__main__":
     nazwaPliku = "C:/Users/Ania/Documents/studia/semestr5/IO/Dane_TSP_48.xlsx"
