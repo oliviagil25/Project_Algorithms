@@ -3,12 +3,28 @@ import numpy as np
 import random
 import xlsxwriter
 
+#wczytanie pliku excel
+if __name__ == "__main__":
+    nazwaPliku = "C:/Users/Ania/Documents/studia/semestr5/IO/Dane_TSP_127.xlsx"
+    daneExcela = pd.read_excel(nazwaPliku)
+    wartosci = daneExcela.values
+    odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
+
+    #parametry
+    liczby_iteracji = [100, 250, 500, 750]
+    rodzaje_sasiedztwa = ["swap_cities", "insert_city", "reverse_order"]
+    startowe_miasta = list(range(1, len(wartosci) + 1))
+
+
+#funkcja licząca odelgłość pomiędzy miastami
 def odleglosc_miasta(miasto_a, miasto_b, odleglosc):
     return odleglosc[f"{miasto_a}:{miasto_b}"]
 
+#funkcja sumująca odległośći
 def oblicz_trase(trasa, odleglosc):
     return sum(odleglosc_miasta(trasa[i], trasa[i + 1], odleglosc) for i in range(len(trasa) - 1))
 
+#funkcja wykonująca ruch w zależności od rodzaju sąsiedztwa
 def jakie_sasiedztwo(trasa, rodzaj_sasiedztwa):
     sasiedztwo = []
 
@@ -56,24 +72,14 @@ def algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe
                             "Odległość": odleglosc_sasiada
                         })
 
-    # wyświetlenie wyników w kolejności malejącej
+    # wyświetlenie wyników w kolejności rosnącej- najlepsze, najkrótsze odległości są pierwsze w kolejności
     wyniki.sort(key=lambda x: x["Odległość"])
 
     return wyniki
 
-if __name__ == "__main__":
-    nazwaPliku = "C:/Users/Ania/Documents/studia/semestr5/IO/Dane_TSP_127.xlsx"
-    daneExcela = pd.read_excel(nazwaPliku)
-    wartosci = daneExcela.values
-    odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
-
-    liczby_iteracji = [100, 250, 500, 750]
-    rodzaje_sasiedztwa = ["swap_cities", "insert_city", "reverse_order"]
-    startowe_miasta = list(range(1, len(wartosci) + 1))
-
     wyniki = algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe_miasta)
 
-    # zapis wyników do pliku Excel
+    # zapis wyników do nowego pliku Excel
     nazwaPlikuWyniki = nazwaPliku.replace('.xlsx', '_wyniki.xlsx')
     arkuszRoboczy = xlsxwriter.Workbook(nazwaPlikuWyniki)
     arkuszDanych = arkuszRoboczy.add_worksheet()
