@@ -3,24 +3,11 @@ import numpy as np
 import random
 import xlsxwriter
 
-#wczytanie pliku excel
-if __name__ == "__main__":
-    nazwaPliku = "C:/Users/Ania/Documents/studia/semestr5/IO/Dane_TSP_127.xlsx"
-    daneExcela = pd.read_excel(nazwaPliku)
-    wartosci = daneExcela.values
-    odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
-
-    #parametry
-    liczby_iteracji = [100, 250, 500, 750]
-    rodzaje_sasiedztwa = ["swap_cities", "insert_city", "reverse_order"]
-    startowe_miasta = list(range(1, len(wartosci) + 1))
-
-
 #funkcja licząca odelgłość pomiędzy miastami
 def odleglosc_miasta(miasto_a, miasto_b, odleglosc):
     return odleglosc[f"{miasto_a}:{miasto_b}"]
 
-#funkcja sumująca odległośći
+#funkcja sumująca odległości
 def oblicz_trase(trasa, odleglosc):
     return sum(odleglosc_miasta(trasa[i], trasa[i + 1], odleglosc) for i in range(len(trasa) - 1))
 
@@ -58,7 +45,7 @@ def algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe
                         aktualne_miasta = sasiad
                         odleglosc_aktualna = odleglosc_sasiada
 
-                        # sprawdzenie czy trasa jest już w wynikach
+                        # sprawdzenie, czy trasa jest już w wynikach
                         if any(np.array_equal(wynik["Trasa"], sasiad) for wynik in wyniki):
                             continue
 
@@ -76,10 +63,21 @@ def algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe
     wyniki.sort(key=lambda x: x["Odległość"])
 
     return wyniki
+# wczytanie pliku excel
+if __name__ == "__main__":
+    nazwaPliku = "C:/Users/Ania/Documents/studia/semestr5/IO/Dane_TSP_48.xlsx"
+    daneExcela = pd.read_excel(nazwaPliku)
+    wartosci = daneExcela.values
+    odleglosc = {f"{x + 1}:{y}": wartosci[x, y] for y in range(1, len(wartosci) + 1) for x in range(len(wartosci))}
+
+    #parametry
+    liczby_iteracji = [100, 250, 500, 750]
+    rodzaje_sasiedztwa = ["swap_cities", "insert_city", "reverse_order"]
+    startowe_miasta = list(range(1, len(wartosci) + 1))
 
     wyniki = algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe_miasta)
 
-    # zapis wyników do nowego pliku Excel
+    # zapis wyników do pliku Excel
     nazwaPlikuWyniki = nazwaPliku.replace('.xlsx', '_wyniki.xlsx')
     arkuszRoboczy = xlsxwriter.Workbook(nazwaPlikuWyniki)
     arkuszDanych = arkuszRoboczy.add_worksheet()
