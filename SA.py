@@ -44,9 +44,9 @@ def simulated_annealing(order, distances_df, initial_temp, final_temp, alpha, ma
 
     return current_order, current_distance
 
-df1 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_48.csv')
-df2 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_76.csv')
-df3 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_127.csv')
+df1 = pd.read_csv('Data/Dane_TSP_48.csv')
+df2 = pd.read_csv('Data/Dane_TSP_76.csv')
+df3 = pd.read_csv('Data/Dane_TSP_127.csv')
 
 
 temperatures = ([50, 100, 500, 2000])

@@ -36,9 +36,9 @@ def best_path(graph):
             best_start = i
     return nearest_neighbor(graph, best_start)
 
-df1 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_48.csv')
-df2 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_76.csv')
-df3 = pd.read_csv('C:/Users/olivv/OneDrive/Pulpit/Dane_TSP_127.csv')
+df1 = pd.read_csv('Data/Dane_TSP_48.csv')
+df2 = pd.read_csv('Data/Dane_TSP_76.csv')
+df3 = pd.read_csv('Data/Dane_TSP_127.csv')
 
 print("Najlepsza kolejność miast:", best_path(df3)[0])
 print("Najlepsza odległość:", best_path(df3)[1])
