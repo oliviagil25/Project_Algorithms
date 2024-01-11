@@ -6,7 +6,7 @@ import xlsxwriter
 def odleglosc_miasta(miasto_a, miasto_b, odleglosc):
     return odleglosc[f"{miasto_a}:{miasto_b}"]
 
-def oblicz_trase_odleglosc(trasa, odleglosc):
+def oblicz_trase(trasa, odleglosc):
     return sum(odleglosc_miasta(trasa[i], trasa[i + 1], odleglosc) for i in range(len(trasa) - 1))
 
 def jakie_sasiedztwo(trasa, rodzaj_sasiedztwa):
@@ -29,24 +29,24 @@ def algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe
     for liczba_iter in liczby_iteracji:
         for rodzaj_sas in rodzaje_sasiedztwa:
             aktualne_miasta = startowe_miasta.copy()
-            odleglosc_aktualna = oblicz_trase_odleglosc(aktualne_miasta, odleglosc)
+            odleglosc_aktualna = oblicz_trase(aktualne_miasta, odleglosc)
 
             for _ in range(liczba_iter):
                 sasiedztwo = jakie_sasiedztwo(aktualne_miasta, rodzaj_sas)
                 random.shuffle(sasiedztwo)
 
                 for sasiad in sasiedztwo:
-                    odleglosc_sasiada = oblicz_trase_odleglosc(sasiad, odleglosc)
+                    odleglosc_sasiada = oblicz_trase(sasiad, odleglosc)
 
                     if odleglosc_sasiada < odleglosc_aktualna:
                         aktualne_miasta = sasiad
                         odleglosc_aktualna = odleglosc_sasiada
 
-                        # Sprawdzam czy trasa (miasto??) jest już w wynikach nie
+                        # sprawdzenie czy trasa jest już w wynikach
                         if any(np.array_equal(wynik["Trasa"], sasiad) for wynik in wyniki):
                             continue
 
-                        # Wyniki
+                        # przedstawienie wyników
                         wyniki.append({
                             "Parametry": {
                                 "liczba_iter": liczba_iter,
@@ -56,7 +56,7 @@ def algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe
                             "Odległość": odleglosc_sasiada
                         })
 
-    # Ustawienie wyników w kolejności malejącej - widoczne najlepsze wyniki
+    # wyświetlenie wyników w kolejności malejącej
     wyniki.sort(key=lambda x: x["Odległość"])
 
     return wyniki
@@ -73,13 +73,13 @@ if __name__ == "__main__":
 
     wyniki = algorytm_wspinaczka(odleglosc, liczby_iteracji, rodzaje_sasiedztwa, startowe_miasta)
 
-    # Zapisanie wyników do pliku Excel
+    # zapis wyników do pliku Excel
     nazwaPlikuWyniki = nazwaPliku.replace('.xlsx', '_wyniki.xlsx')
     arkuszRoboczy = xlsxwriter.Workbook(nazwaPlikuWyniki)
     arkuszDanych = arkuszRoboczy.add_worksheet()
-    arkuszDanych.set_column(0, 2, 20)  # Ustawienie szerokości kolumny
+    arkuszDanych.set_column(0, 2, 20)  # ustawienie szerokości kolumny
 
-    # Nagłówki
+    # nagłówki
     naglowki = ['Liczba Iteracji', 'Rodzaj Sasiedztwa', 'Odległość', 'Trasa']
     for k, naglowek in enumerate(naglowki):
         arkuszDanych.write(0, k, naglowek)
